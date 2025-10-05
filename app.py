@@ -1,9 +1,9 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import joblib
 import numpy as np
-import os  # ✅ added for absolute path
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")  # Templates folder specify
 
 # --------------------------
 # Manual CORS handling
@@ -18,7 +18,6 @@ def after_request(response):
 # --------------------------
 # Load compressed model from local folder
 # --------------------------
-# 🔹 FIXED: use absolute path to ensure server finds the file
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "Price_model.pkl")
 
 try:
@@ -66,11 +65,8 @@ def prepare_features(input_data):
 # --------------------------
 @app.route('/')
 def home():
-    return jsonify({
-        "message": "Price Prediction Model API is running!",
-        "status": "active",
-        "model_features": model.n_features_in_ if model else "No model loaded"
-    })
+    # 🔹 Serve HTML page
+    return render_template('index.html')
 
 @app.route('/predict', methods=['POST', 'OPTIONS'])
 def predict():
@@ -113,7 +109,6 @@ def model_info():
 
 @app.route('/features', methods=['GET'])
 def get_features():
-    # (Same as before)
     features_info = {
         "features": {
             "fulfilment": {"name": "Fulfilment", "options": [{"value": 0, "label": "Amazon.in"}, {"value": 1, "label": "Merchant"}]},
@@ -142,3 +137,4 @@ if __name__ == '__main__':
     if model:
         print(f"📊 Model expects {model.n_features_in_} features")
     app.run(debug=True, host='0.0.0.0', port=5000)
+
