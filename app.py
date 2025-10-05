@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import joblib
 import numpy as np
-import os
+import os  # ✅ added for absolute path
 
 app = Flask(__name__)
 
@@ -16,9 +16,10 @@ def after_request(response):
     return response
 
 # --------------------------
-# Load compressed model from GitHub repo
+# Load compressed model from local folder
 # --------------------------
-MODEL_PATH = "Price_model.pkl"
+# 🔹 FIXED: use absolute path to ensure server finds the file
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "Price_model.pkl")
 
 try:
     model = joblib.load(MODEL_PATH)
