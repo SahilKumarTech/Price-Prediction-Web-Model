@@ -677,8 +677,9 @@ X_encoded = encoder.fit_transform(X)
 X_train, X_test, y_train, y_test = train_test_split(X_encoded, y, test_size=0.2, random_state=42)
 
 # Model
-reg = RandomForestRegressor(random_state=42)
+reg = RandomForestRegressor(n_estimators=50, random_state=42)  # n_estimators कम किया
 reg.fit(X_train, y_train)
+
 
 # Prediction
 y_pred = reg.predict(X_test)
@@ -760,15 +761,17 @@ print("R² Score:", r2_score(y_test, y_pred))
 
 
 """
+# -------------------------
+# Save model with compression
+# -------------------------
 
-# Save and download a model as .pkl
-import pickle
-from google.colab import files
+joblib.dump(reg, 'Price_model.pkl', compress=3)  
+print("✅ Compressed model saved as 'Price_model.pkl'")
 
-# Save model as .pkl file
-with open('Price_model.pkl', 'wb') as file:
-    pickle.dump(reg, file)
-
-# Download the file
-files.download('Price_model.pkl')
+# Optional: Google Colab download (अगर Colab use कर रहे हो)
+try:
+    from google.colab import files
+    files.download('Price_model.pkl')
+except:
+    pass
 
