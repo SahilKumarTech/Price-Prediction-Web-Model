@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Prediction Model</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background-color: white;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: #7f8c8d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background-color: var(--light-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+
+        /* Prediction Section */
+        .prediction {
+            padding: 80px 0;
+            background-color: #f5f7fa;
+        }
+
+        .prediction-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .prediction-form {
+            background-color: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        /* Dropdown specific styles */
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        .prediction-result {
+            background-color: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+
+        .result-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 20px 0;
+        }
+
+        .result-placeholder {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin: 40px 0;
+        }
+
+        .error-message {
+            color: var(--accent-color);
+            background-color: #fadbd8;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            margin: 10px 0;
+            display: none;
+        }
+
+        /* Model Info Section */
+        .model-info {
+            padding: 80px 0;
+            background-color: white;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .info-card {
+            padding: 30px;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+        }
+
+        .info-card h3 {
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #34495e;
+            color: #bdc3c7;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 15px 0;
+            }
+
+            .nav-links {
+                margin-top: 20px;
+            }
+
+            .nav-links li {
+                margin: 0 10px;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .prediction-container {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loader {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">PricePredict</div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#prediction">Predict</a></li>
+                    <li><a href="#model">Model Info</a></li>
+                </ul>
+                <a href="#prediction" class="btn">Try Now</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Accurate Price Predictions with Machine Learning</h1>
+            <p>Our advanced Random Forest model provides precise price predictions based on your input data. Experience the power of machine learning in action.</p>
+            <a href="#prediction" class="btn">Get Started</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Why Choose Our Model</h2>
+                <p>Our price prediction model offers several advantages for accurate forecasting</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>High Accuracy</h3>
+                    <p>Built with a robust Random Forest algorithm that delivers reliable predictions with minimal error.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Fast Processing</h3>
+                    <p>Get predictions in seconds with our optimized model that processes data efficiently.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Feature Analysis</h3>
+                    <p>Understand which factors most influence price with our model's feature importance analysis.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prediction Section -->
+    <section class="prediction" id="prediction">
+        <div class="container">
+            <div class="section-title">
+                <h2>Get Your Price Prediction</h2>
+                <p>Enter the required parameters to receive an accurate price prediction</p>
+            </div>
+            <div class="prediction-container">
+                <div class="prediction-form">
+                    <form id="predictionForm">
+                        <div class="form-group">
+                            <label for="fulfilment">Fulfilment</label>
+                            <select id="fulfilment" class="form-control" required>
+                                <option value="">Select Fulfilment</option>
+                                <option value="0">Amazon.in</option>
+                                <option value="1">Merchant</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sales_channel">Sales Channel</label>
+                            <select id="sales_channel" class="form-control" required>
+                                <option value="">Select Sales Channel</option>
+                                <option value="0">Amazon.in</option>
+                                <option value="1">Non-Amazon</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" class="form-control" required>
+                                <option value="">Select Category</option>
+                                <option value="1">T-shirt</option>
+                                <option value="2">Shirt</option>
+                                <option value="3">Blazzer</option>
+                                <option value="4">Trousers</option>
+                                <option value="5">Perfume</option>
+                                <option value="6">Wallet</option>
+                                <option value="7">Socks</option>
+                                <option value="8">Shoes</option>
+                                <option value="9">Watch</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="size">Size</label>
+                            <select id="size" class="form-control" required>
+                                <option value="">Select Size</option>
+                                <option value="1">M</option>
+                                <option value="2">L</option>
+                                <option value="3">XL</option>
+                                <option value="4">XXL</option>
+                                <option value="5">S</option>
+                                <option value="6">3XL</option>
+                                <option value="7">XS</option>
+                                <option value="8">Free</option>
+                                <option value="9">6XL</option>
+                                <option value="10">5XL</option>
+                                <option value="11">4XL</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="qty">Quantity</label>
+                            <select id="qty" class="form-control" required>
+                                <option value="">Select Quantity</option>
+                                <option value="1">1</option>
+                                <option value="0">0</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="9">9</option>
+                                <option value="15">15</option>
+                                <option value="13">13</option>
+                                <option value="8">8</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="b2b">B2B</label>
+                            <select id="b2b" class="form-control" required>
+                                <option value="">Select B2B</option>
+                                <option value="0">False</option>
+                                <option value="1">True</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ship_state">Ship State</label>
+                            <select id="ship_state" class="form-control" required>
+                                <option value="">Select Ship State</option>
+                                <option value="1">MAHARASHTRA</option>
+                                <option value="2">KARNATAKA</option>
+                                <option value="3">TAMIL NADU</option>
+                                <option value="4">TELANGANA</option>
+                                <option value="5">UTTAR PRADESH</option>
+                                <option value="6">DELHI</option>
+                                <option value="7">WEST BENGAL</option>
+                                <option value="8">GUJARAT</option>
+                                <option value="9">RAJASTHAN</option>
+                                <option value="10">BIHAR</option>
+                                <option value="11">NAGALAND</option>
+                                <option value="12">MIZORAM</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;" id="predictBtn">Predict Price</button>
+                    </form>
+                </div>
+                <div class="prediction-result">
+                    <h3>Predicted Price</h3>
+                    <div class="loader" id="loader"></div>
+                    <div class="error-message" id="errorMessage"></div>
+                    <div class="result-value" id="resultValue">--</div>
+                    <div class="result-placeholder" id="resultPlaceholder">
+                        Fill out the form and click "Predict Price" to see the result
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Model Info Section -->
+    <section class="model-info" id="model">
+        <div class="container">
+            <div class="section-title">
+                <h2>About Our Model</h2>
+                <p>Learn more about the machine learning model powering our predictions</p>
+            </div>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Model Architecture</h3>
+                    <p>Our model uses a Random Forest Regressor with 100 decision trees, trained on extensive historical data to ensure accurate predictions.</p>
+                </div>
+                <div class="info-card">
+                    <h3>Training Data</h3>
+                    <p>The model was trained on a diverse dataset with multiple features that influence pricing, ensuring robust performance across various scenarios.</p>
+                </div>
+                <div class="info-card">
+                    <h3>Performance Metrics</h3>
+                    <p>Our model achieves an R² score of 0.92 and a mean absolute error of 4.5%, demonstrating high predictive accuracy.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>PricePredict</h3>
+                    <p>Advanced machine learning solutions for accurate price forecasting.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="footer-links">
+                        <li>Email: gautamsahil552004@gmail.com</li>
+                        <li>Phone: +95111 38822</li>
+                        <li>Address: H/No- 1500/18 Samrat Nager Raebareli UP- 229001</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 PricePredict. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Form submission handler
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const predictBtn = document.getElementById('predictBtn');
+            const loader = document.getElementById('loader');
+            const errorMessage = document.getElementById('errorMessage');
+            const resultValue = document.getElementById('resultValue');
+            const resultPlaceholder = document.getElementById('resultPlaceholder');
+
+            // Reset UI
+            errorMessage.style.display = 'none';
+            resultPlaceholder.style.display = 'none';
+            loader.style.display = 'block';
+            resultValue.textContent = '--';
+            predictBtn.disabled = true;
+
+            // Collect form data from dropdowns
+            const formData = {
+                fulfilment: parseInt(document.getElementById('fulfilment').value),
+                sales_channel: parseInt(document.getElementById('sales_channel').value),
+                category: parseInt(document.getElementById('category').value),
+                size: parseInt(document.getElementById('size').value),
+                qty: parseInt(document.getElementById('qty').value),
+                b2b: parseInt(document.getElementById('b2b').value),
+                ship_state: parseInt(document.getElementById('ship_state').value)
+            };
+
+            try {
+                // API call to your backend
+                const response = await fetch('http://localhost:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Prediction failed');
+                }
+
+                // Display actual prediction
+                resultValue.textContent = '₹' + result.prediction.toFixed(2);
+
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessage.textContent = 'Error: ' + error.message;
+                errorMessage.style.display = 'block';
+                resultValue.textContent = 'Error';
+            } finally {
+                loader.style.display = 'none';
+                predictBtn.disabled = false;
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
