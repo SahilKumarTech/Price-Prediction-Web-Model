@@ -1,6 +1,5 @@
-flask
-pandas
+Flask==2.3.4
 numpy
-scikit-learn
-requests
+joblib
 gunicorn
+
