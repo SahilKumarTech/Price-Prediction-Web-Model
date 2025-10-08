@@ -20,3 +20,18 @@ This project is a part of an internship project and showcases skills in data ana
 
 ## 📁 Project Structure
 
+```
+Price-Prediction-Web-Model/
+│
+├── app.py                   # Main Flask application
+├── internship_project.py    # Model training script
+├── Amazon Sale Report.csv   # Dataset used for training
+├── Price_model.pkl          # Trained model
+├── requirements.txt         # Python dependencies
+├── runtime.txt              # Python runtime for Heroku
+├── Procfile                 # Heroku deployment file
+├── vercel.json              # Vercel configuration file
+├── templates/
+│   └── index.html           # HTML template for the frontend
+└── README.md                # Project documentation
+```
