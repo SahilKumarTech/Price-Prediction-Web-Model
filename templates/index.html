@@ -590,81 +590,58 @@
     </footer>
 
     <script>
-        // Form submission handler
-        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-            const predictBtn = document.getElementById('predictBtn');
-            const loader = document.getElementById('loader');
-            const errorMessage = document.getElementById('errorMessage');
-            const resultValue = document.getElementById('resultValue');
-            const resultPlaceholder = document.getElementById('resultPlaceholder');
+    const predictBtn = document.getElementById('predictBtn');
+    const loader = document.getElementById('loader');
+    const errorMessage = document.getElementById('errorMessage');
+    const resultValue = document.getElementById('resultValue');
+    const resultPlaceholder = document.getElementById('resultPlaceholder');
 
-            // Reset UI
-            errorMessage.style.display = 'none';
-            resultPlaceholder.style.display = 'none';
-            loader.style.display = 'block';
-            resultValue.textContent = '--';
-            predictBtn.disabled = true;
+    errorMessage.style.display = 'none';
+    resultPlaceholder.style.display = 'none';
+    loader.style.display = 'block';
+    resultValue.textContent = '--';
+    predictBtn.disabled = true;
 
-            // Collect form data from dropdowns
-            const formData = {
-                fulfilment: parseInt(document.getElementById('fulfilment').value),
-                sales_channel: parseInt(document.getElementById('sales_channel').value),
-                category: parseInt(document.getElementById('category').value),
-                size: parseInt(document.getElementById('size').value),
-                qty: parseInt(document.getElementById('qty').value),
-                b2b: parseInt(document.getElementById('b2b').value),
-                ship_state: parseInt(document.getElementById('ship_state').value)
-            };
+    const formData = {
+        fulfilment: parseInt(document.getElementById('fulfilment').value),
+        sales_channel: parseInt(document.getElementById('sales_channel').value),
+        category: parseInt(document.getElementById('category').value),
+        size: parseInt(document.getElementById('size').value),
+        qty: parseInt(document.getElementById('qty').value),
+        b2b: parseInt(document.getElementById('b2b').value),
+        ship_state: parseInt(document.getElementById('ship_state').value)
+    };
 
-            try {
-                // API call to your backend
-                const response = await fetch('http://localhost:5000/predict', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.error || 'Prediction failed');
-                }
-
-                // Display actual prediction
-                resultValue.textContent = '₹' + result.prediction.toFixed(2);
-
-            } catch (error) {
-                console.error('Error:', error);
-                errorMessage.textContent = 'Error: ' + error.message;
-                errorMessage.style.display = 'block';
-                resultValue.textContent = 'Error';
-            } finally {
-                loader.style.display = 'none';
-                predictBtn.disabled = false;
-            }
+    try {
+        // ✅ Changed URL — now points to same domain (Render)
+        const response = await fetch('/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
         });
 
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
+        const result = await response.json();
 
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
+        if (!response.ok) {
+            throw new Error(result.error || 'Prediction failed');
+        }
 
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-    </script>
+        resultValue.textContent = '₹' + result.prediction.toFixed(2);
+
+    } catch (error) {
+        console.error('Error:', error);
+        errorMessage.textContent = 'Error: ' + error.message;
+        errorMessage.style.display = 'block';
+        resultValue.textContent = 'Error';
+    } finally {
+        loader.style.display = 'none';
+        predictBtn.disabled = false;
+    }
+});
+</script>
+
 </body>
 </html>
